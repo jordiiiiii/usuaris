@@ -13,8 +13,27 @@ class RolesController extends AbstractController
      */
     public function index(): Response
     {
-        return $this->render('roles/index.html.twig', [
-            'controller_name' => 'RolesController',
-        ]);
+        if (is_object($this->get('security.token_storage')->getToken()->getUser())) {
+            return $this->redirectToRoute('redireccionar');
+        }
+
+        else  {
+            return $this->redirectToRoute('app_login');
+        }
+    }
+    /**
+     * @Route("/redireccionar", name="redireccionar")
+     */
+    public function redireccionar(): Response
+    {
+        if(in_array("ROLE_CAP", $this->getUser()->getRoles())){
+            return $this->redirectToRoute('cap_role');
+        }
+        else if(in_array("ROLE_ADMIN", $this->getUser()->getRoles())){
+            return $this->redirectToRoute('user_index');
+        }
+        else{
+            return $this->redirectToRoute('user_role');
+        }
     }
 }
